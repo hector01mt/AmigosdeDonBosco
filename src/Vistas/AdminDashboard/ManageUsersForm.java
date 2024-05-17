@@ -51,15 +51,12 @@ public class ManageUsersForm extends JFrame {
         editButton = new JButton("Actualizar");
         deleteButton = new JButton("Eliminar");
 
-        // Configurar modelo de tabla para usuarios
         String[] columnNames = {"ID", "Nombre", "Correo electrónico", "Tipo de Usuario"};
         tableModel = new DefaultTableModel(columnNames, 0);
         usersTable.setModel(tableModel);
 
-        // Scroll pane para la tabla
         JScrollPane scrollPane = new JScrollPane(usersTable);
 
-        // Layout
         GroupLayout layout = new GroupLayout(mainPanel);
         mainPanel.setLayout(layout);
         layout.setAutoCreateGaps(true);
@@ -105,10 +102,8 @@ public class ManageUsersForm extends JFrame {
                         .addComponent(scrollPane)
         );
 
-        // Llenar la tabla con datos de la base de datos
         loadUsers();
 
-        // Botón Agregar Usuario
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -120,7 +115,7 @@ public class ManageUsersForm extends JFrame {
                 usuario.setNombreUsuario(name);
                 usuario.setEmail(email);
                 usuario.setTipoUsuario(userType);
-                usuario.setContrasena("default"); // Establecer una contraseña predeterminada
+                usuario.setContrasena("default");
 
                 try {
                     UsuariosMetodos.agregarUsuario(usuario);
@@ -133,7 +128,6 @@ public class ManageUsersForm extends JFrame {
             }
         });
 
-        // Botón Editar Usuario
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -162,7 +156,6 @@ public class ManageUsersForm extends JFrame {
             }
         });
 
-        // Botón Eliminar Usuario
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -182,7 +175,6 @@ public class ManageUsersForm extends JFrame {
             }
         });
 
-        // Configurar selección de fila en la tabla
         usersTable.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = usersTable.getSelectedRow();
             if (selectedRow != -1) {
@@ -200,7 +192,7 @@ public class ManageUsersForm extends JFrame {
     private void loadUsers() {
         try {
             List<Usuarios> usuarios = UsuariosMetodos.getAllUsuarios();
-            tableModel.setRowCount(0); // Limpiar la tabla antes de agregar nuevos datos
+            tableModel.setRowCount(0);
             for (Usuarios usuario : usuarios) {
                 tableModel.addRow(new Object[]{usuario.getIdUsuario(), usuario.getNombreUsuario(), usuario.getEmail(), usuario.getTipoUsuario()});
             }
