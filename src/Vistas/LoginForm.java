@@ -19,16 +19,13 @@ public class LoginForm extends JFrame{
 
     public LoginForm() {
 
-        // Inicializar el panel principal y el layout
         loginPanel = new JPanel();
         loginPanel.setLayout(new GridBagLayout());
 
-        // Configuración de GridBagConstraints para el layout
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Inicializar y agregar el mensaje de bienvenida
         JLabel welcomeLabel = new JLabel("Bienvenido a la Biblioteca Virtual. Por favor inicie sesión.");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 16));
         gbc.gridx = 0;
@@ -37,7 +34,6 @@ public class LoginForm extends JFrame{
         gbc.insets = new Insets(10, 10, 20, 10);
         loginPanel.add(welcomeLabel, gbc);
 
-        // Inicializar y agregar la etiqueta y el campo de texto para el email
         JLabel emailLabel = new JLabel("Email:");
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -50,7 +46,6 @@ public class LoginForm extends JFrame{
         gbc.gridy = 1;
         loginPanel.add(emailField, gbc);
 
-        // Inicializar y agregar la etiqueta y el campo de texto para la contraseña
         JLabel passwordLabel = new JLabel("Password:");
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -61,7 +56,6 @@ public class LoginForm extends JFrame{
         gbc.gridy = 2;
         loginPanel.add(passwordField, gbc);
 
-        // Inicializar y agregar el botón de login
         loginButton = new JButton("Login");
         gbc.gridx = 1;
         gbc.gridy = 3;
@@ -69,7 +63,6 @@ public class LoginForm extends JFrame{
         gbc.insets = new Insets(15, 5, 5, 5);
         loginPanel.add(loginButton, gbc);
 
-        // Agregar el panel principal al frame
         add(loginPanel, BorderLayout.CENTER);
 
         setTitle("Login");
@@ -117,7 +110,5 @@ public class LoginForm extends JFrame{
             }
         });
     }
-
-
 
 }

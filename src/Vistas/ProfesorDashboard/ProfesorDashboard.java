@@ -1,6 +1,8 @@
 package Vistas.ProfesorDashboard;
 
+
 import Modelo.Usuarios;
+import Vistas.DocumentProcess.SearchDocumentsForm;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +30,7 @@ public class ProfesorDashboard extends JFrame {
         setSize(400, 300);
         setLocationRelativeTo(null);
 
-        //searchDocumentsButton.addActionListener(e -> new SearchDocumentsForm().setVisible(true));
+         searchDocumentsButton.addActionListener(e -> new SearchDocumentsForm().setVisible(true));
         //borrowedDocumentsButton.addActionListener(e -> new BorrowedDocumentsForm().setVisible(true));
     }
 

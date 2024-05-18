@@ -6,24 +6,37 @@ import java.util.ArrayList;
 import java.util.List;
 public class DocumentosMetodos {
 
-    public static void agregarDocumento(Documentos documento) throws SQLException {
-        String sql = "INSERT INTO Documentos (tipo_documento, titulo, autor, editorial, anio_publicacion, ubicacion_fisica, cantidad_ejemplares, ejemplares_disponibles, ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public static List<Documentos> buscarDocumentos(String searchText) throws SQLException {
+        List<Documentos> documentos = new ArrayList<>();
 
+        String sql = "SELECT * FROM Documentos WHERE titulo LIKE ? OR autor LIKE ?";
         try (Connection connection = Conexion.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, documento.getTipoDocumento());
-            statement.setString(2, documento.getTitulo());
-            statement.setString(3, documento.getAutor());
-            statement.setString(4, documento.getEditorial());
-            statement.setInt(5, documento.getAnioPublicacion());
-            statement.setString(6, documento.getUbicacionFisica());
-            statement.setInt(7, documento.getCantidadEjemplares());
-            statement.setInt(8, documento.getEjemplaresDisponibles());
-            statement.setInt(9, documento.getEjemplaresPrestados());
-            statement.executeUpdate();
-        }
-    }
+            // Agregar los comodines '%' al texto de búsqueda para realizar una búsqueda parcial
+            String searchTerm = "%" + searchText + "%";
+            statement.setString(1, searchTerm);
+            statement.setString(2, searchTerm);
 
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Documentos documento = new Documentos();
+                documento.setIdDocumento(resultSet.getInt("id_documento"));
+                documento.setTipoDocumento(resultSet.getString("tipo_documento"));
+                documento.setTitulo(resultSet.getString("titulo"));
+                documento.setAutor(resultSet.getString("autor"));
+                documento.setEditorial(resultSet.getString("editorial"));
+                documento.setAnioPublicacion(resultSet.getInt("anio_publicacion"));
+                documento.setUbicacionFisica(resultSet.getString("ubicacion_fisica"));
+                documento.setCantidadEjemplares(resultSet.getInt("cantidad_ejemplares"));
+                documento.setEjemplaresDisponibles(resultSet.getInt("ejemplares_disponibles"));
+                documento.setEjemplaresPrestados(resultSet.getInt("ejemplares_prestados"));
+
+                documentos.add(documento);
+            }
+        }
+
+        return documentos;
+    }
     public static List<Documentos> getAllDocumentos() throws SQLException {
         List<Documentos> documentos = new ArrayList<>();
         String sql = "SELECT * FROM Documentos";
@@ -49,6 +62,25 @@ public class DocumentosMetodos {
 
         return documentos;
     }
+    public static void agregarDocumento(Documentos documento) throws SQLException {
+        String sql = "INSERT INTO Documentos (tipo_documento, titulo, autor, editorial, anio_publicacion, ubicacion_fisica, cantidad_ejemplares, ejemplares_disponibles, ejemplares_prestados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection connection = Conexion.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, documento.getTipoDocumento());
+            statement.setString(2, documento.getTitulo());
+            statement.setString(3, documento.getAutor());
+            statement.setString(4, documento.getEditorial());
+            statement.setInt(5, documento.getAnioPublicacion());
+            statement.setString(6, documento.getUbicacionFisica());
+            statement.setInt(7, documento.getCantidadEjemplares());
+            statement.setInt(8, documento.getEjemplaresDisponibles());
+            statement.setInt(9, documento.getEjemplaresPrestados());
+            statement.executeUpdate();
+        }
+    }
+
+
 
     public static void actualizarDocumento(Documentos documento) throws SQLException {
         String sql = "UPDATE Documentos SET tipo_documento = ?, titulo = ?, autor = ?, editorial = ?, anio_publicacion = ?, ubicacion_fisica = ?, cantidad_ejemplares = ?, ejemplares_disponibles = ?, ejemplares_prestados = ? WHERE id_documento = ?";

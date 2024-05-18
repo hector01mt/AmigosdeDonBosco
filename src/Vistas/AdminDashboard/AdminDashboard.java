@@ -15,19 +15,38 @@ public class AdminDashboard extends JFrame {
 
             adminPanel = new JPanel();
             adminPanel.setLayout(new BorderLayout());
-            manageUsersButton = new JButton("Administrar Usuarios");
-            manageDocumentsButton = new JButton("Administrar biblioteca");
-            manageLoansButton = new JButton("Prestamos");
 
-            adminPanel.add(manageUsersButton, BorderLayout.NORTH);
-            adminPanel.add(manageDocumentsButton, BorderLayout.CENTER);
-            adminPanel.add(manageLoansButton, BorderLayout.SOUTH);
-            setContentPane(adminPanel);
+            // Mensaje de bienvenida
+            JLabel welcomeLabel = new JLabel("¡Bienvenido al Panel de Administrador!");
+            welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
+            welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            adminPanel.add(welcomeLabel, BorderLayout.NORTH);
+
+            // Panel para los botones
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 30));
+
+            // Botón "Administrar Usuarios"
+            manageUsersButton = new JButton("Administrar Usuarios");
+            manageUsersButton.setPreferredSize(new Dimension(200, 50));
+            buttonPanel.add(manageUsersButton);
+
+            // Botón "Administrar Biblioteca"
+            manageDocumentsButton = new JButton("Administrar Biblioteca");
+            manageDocumentsButton.setPreferredSize(new Dimension(200, 50));
+            buttonPanel.add(manageDocumentsButton);
+
+            // Botón "Préstamos"
+            manageLoansButton = new JButton("Préstamos");
+            manageLoansButton.setPreferredSize(new Dimension(200, 50));
+            buttonPanel.add(manageLoansButton);
+
+            adminPanel.add(buttonPanel, BorderLayout.CENTER);
 
             setTitle("Admin Dashboard");
             setContentPane(adminPanel);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setSize(400, 300);
+            setSize(800, 600);
             setLocationRelativeTo(null);
 
             manageUsersButton.addActionListener(e -> new ManageUsersForm().setVisible(true));

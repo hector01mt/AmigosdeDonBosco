@@ -78,4 +78,10 @@ public class Prestamos {
     public void setMora(double mora) {
         this.mora = mora;
     }
+
+    public void setFechaPrestamo(String fechaPrestamo) {
+    }
+
+    public void setFechaDevolucion(String fechaDevolucion) {
+    }
 }
