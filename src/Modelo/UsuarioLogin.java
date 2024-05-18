@@ -1,7 +1,7 @@
 package Modelo;
 import java.sql.*;
 
-public class UsuarioService {
+public class UsuarioLogin {
 
     public static Usuarios login(String email, String password) throws SQLException {
         String sql = "SELECT * FROM Usuarios WHERE email = ? AND contraseña = ?";

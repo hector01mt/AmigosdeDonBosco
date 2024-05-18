@@ -1,5 +1,5 @@
 package Vistas;
-import Modelo.UsuarioService;
+import Modelo.UsuarioLogin;
 import Modelo.Usuarios;
 import Vistas.AdminDashboard.AdminDashboard;
 import Vistas.AlumnoDashboard.AlumnoDashboard;
@@ -76,7 +76,7 @@ public class LoginForm extends JFrame{
                 String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
                 try {
-                    Usuarios usuario = UsuarioService.login(email, password);
+                    Usuarios usuario = UsuarioLogin.login(email, password);
                     if (usuario != null) {
                         JOptionPane.showMessageDialog(null, "Login exitoso. Tipo de usuario: " + usuario.getTipoUsuario());
                         switch (usuario.getTipoUsuario()) {
