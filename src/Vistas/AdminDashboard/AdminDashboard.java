@@ -16,27 +16,22 @@ public class AdminDashboard extends JFrame {
             adminPanel = new JPanel();
             adminPanel.setLayout(new BorderLayout());
 
-            // Mensaje de bienvenida
             JLabel welcomeLabel = new JLabel("¡Bienvenido al Panel de Administrador!");
             welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
             welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
             adminPanel.add(welcomeLabel, BorderLayout.NORTH);
 
-            // Panel para los botones
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 30));
 
-            // Botón "Administrar Usuarios"
             manageUsersButton = new JButton("Administrar Usuarios");
             manageUsersButton.setPreferredSize(new Dimension(200, 50));
             buttonPanel.add(manageUsersButton);
 
-            // Botón "Administrar Biblioteca"
             manageDocumentsButton = new JButton("Administrar Biblioteca");
             manageDocumentsButton.setPreferredSize(new Dimension(200, 50));
             buttonPanel.add(manageDocumentsButton);
 
-            // Botón "Préstamos"
             manageLoansButton = new JButton("Préstamos");
             manageLoansButton.setPreferredSize(new Dimension(200, 50));
             buttonPanel.add(manageLoansButton);

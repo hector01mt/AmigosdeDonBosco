@@ -39,7 +39,6 @@ public class ManageDocumentsForm extends JFrame{
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        // Panel de entrada de datos
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new GridLayout(11, 2));
 
@@ -79,7 +78,6 @@ public class ManageDocumentsForm extends JFrame{
         borrowedCopiesField = new JTextField();
         inputPanel.add(borrowedCopiesField);
 
-        // Botones
         addButton = new JButton("Agregar");
         editButton = new JButton("Actualizar");
         deleteButton = new JButton("Eliminar");
@@ -92,7 +90,6 @@ public class ManageDocumentsForm extends JFrame{
 
         mainPanel.add(inputPanel, BorderLayout.NORTH);
 
-        // Tabla de documentos
         String[] columnNames = {"ID", "Tipo", "Título", "Autor", "Editorial", "Año", "Ubicación", "Total", "Disponibles", "Prestados"};
         tableModel = new DefaultTableModel(columnNames, 0);
         documentsTable = new JTable(tableModel);
@@ -101,10 +98,8 @@ public class ManageDocumentsForm extends JFrame{
 
         setContentPane(mainPanel);
 
-        // Llenar la tabla con datos de la base de datos
         loadDocuments();
 
-        // Botón Agregar Documento
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -130,7 +125,6 @@ public class ManageDocumentsForm extends JFrame{
             }
         });
 
-        // Botón Editar Documento
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -162,7 +156,6 @@ public class ManageDocumentsForm extends JFrame{
             }
         });
 
-        // Botón Eliminar Documento
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -189,7 +182,6 @@ public class ManageDocumentsForm extends JFrame{
             }
         });
 
-        // Configurar selección de fila en la tabla
         documentsTable.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = documentsTable.getSelectedRow();
             if (selectedRow != -1) {

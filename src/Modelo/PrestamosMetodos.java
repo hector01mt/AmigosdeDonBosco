@@ -1,9 +1,9 @@
 package Modelo;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 public class PrestamosMetodos {
-
     public static List<Prestamos> getAllPrestamos() throws SQLException {
         List<Prestamos> prestamos = new ArrayList<>();
         String query = "SELECT * FROM Prestamos";
@@ -17,7 +17,7 @@ public class PrestamosMetodos {
                 prestamo.setIdDocumento(resultSet.getInt("id_documento"));
                 prestamo.setFechaPrestamo(resultSet.getString("fecha_prestamo"));
                 prestamo.setFechaDevolucion(resultSet.getString("fecha_devolucion"));
-                prestamo.setDevuelto(Boolean.parseBoolean(resultSet.getString("estado")));
+                prestamo.setDevuelto(parseBoolean(resultSet.getString("estado")));
                 prestamo.setMora(resultSet.getDouble("mora_acumulada"));
                 prestamos.add(prestamo);
             }
@@ -25,33 +25,35 @@ public class PrestamosMetodos {
         return prestamos;
     }
 
-    public static void agregarPrestamo(Prestamos prestamo) throws SQLException {
-        String sql = "INSERT INTO Prestamos (id_usuario, id_documento, fecha_prestamo, fecha_devolucion, estado, mora_acumulada) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+    private static boolean parseBoolean(String str) {
+        return str != null && (str.equalsIgnoreCase("true") || str.equals("1"));
+    }
+
+    public static void agregarPrestamo(int idUsuario, int idDocumento, String fechaPrestamo, String fechaDevolucion, String estado, double moraAcumulada) throws SQLException {
+        String sql = "INSERT INTO Prestamos (id_usuario, id_documento, fecha_prestamo, fecha_devolucion, estado, mora_acumulada) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection connection = Conexion.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, prestamo.getIdUsuario());
-            statement.setInt(2, prestamo.getIdDocumento());
-            statement.setString(3, prestamo.getFechaPrestamo().toString());
-            statement.setString(4, prestamo.getFechaDevolucion().toString());
-            statement.setString(5, String.valueOf(prestamo.isDevuelto()));
-            statement.setDouble(6, prestamo.getMora());
+            statement.setInt(1, idUsuario);
+            statement.setInt(2, idDocumento);
+            statement.setString(3, fechaPrestamo);
+            statement.setString(4, fechaDevolucion);
+            statement.setString(5, estado);
+            statement.setDouble(6, moraAcumulada);
             statement.executeUpdate();
         }
     }
 
-    public static void actualizarPrestamo(Prestamos prestamo) throws SQLException {
-        String sql = "UPDATE Prestamos SET id_usuario=?, id_documento=?, fecha_prestamo=?, fecha_devolucion=?, estado=?, mora_acumulada=? " +
-                "WHERE id_prestamo=?";
+    public static void actualizarPrestamo(int idPrestamo, int idUsuario, int idDocumento, String fechaPrestamo, String fechaDevolucion, String estado, double moraAcumulada) throws SQLException {
+        String sql = "UPDATE Prestamos SET id_usuario=?, id_documento=?, fecha_prestamo=?, fecha_devolucion=?, estado=?, mora_acumulada=? WHERE id_prestamo=?";
         try (Connection connection = Conexion.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, prestamo.getIdUsuario());
-            statement.setInt(2, prestamo.getIdDocumento());
-            statement.setString(3, prestamo.getFechaPrestamo().toString());
-            statement.setString(4, prestamo.getFechaDevolucion().toString());
-            statement.setString(5, String.valueOf(prestamo.isDevuelto()));
-            statement.setDouble(6, prestamo.getMora());
-            statement.setInt(7, prestamo.getIdPrestamo());
+            statement.setInt(1, idUsuario);
+            statement.setInt(2, idDocumento);
+            statement.setString(3, fechaPrestamo);
+            statement.setString(4, fechaDevolucion);
+            statement.setString(5, estado);
+            statement.setDouble(6, moraAcumulada);
+            statement.setInt(7, idPrestamo);
             statement.executeUpdate();
         }
     }
@@ -65,4 +67,7 @@ public class PrestamosMetodos {
         }
     }
 
+
+    public static void agregarPrestamo(int idUsuario, int idDocumento, Date fechaPrestamo, Date fechaDevolucion) {
+    }
 }

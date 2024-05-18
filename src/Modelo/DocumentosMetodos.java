@@ -4,38 +4,35 @@ import java.sql.PreparedStatement;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
 public class DocumentosMetodos {
 
-    public static List<Documentos> buscarDocumentos(String searchText) throws SQLException {
-        List<Documentos> documentos = new ArrayList<>();
+    public static Vector<Vector<Object>> buscarDocumentos(String searchText) throws SQLException {
+        Vector<Vector<Object>> data = new Vector<>();
 
-        String sql = "SELECT * FROM Documentos WHERE titulo LIKE ? OR autor LIKE ?";
-        try (Connection connection = Conexion.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            // Agregar los comodines '%' al texto de búsqueda para realizar una búsqueda parcial
-            String searchTerm = "%" + searchText + "%";
-            statement.setString(1, searchTerm);
-            statement.setString(2, searchTerm);
+        try (Connection connection = Conexion.getConnection()) {
+            String sql = "SELECT id_documento, tipo_documento, titulo, autor, editorial, anio_publicacion, ubicacion_fisica, cantidad_ejemplares, ejemplares_disponibles, ejemplares_prestados FROM Documentos WHERE titulo LIKE ? OR autor LIKE ?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, "%" + searchText + "%");
+                statement.setString(2, "%" + searchText + "%");
 
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Documentos documento = new Documentos();
-                documento.setIdDocumento(resultSet.getInt("id_documento"));
-                documento.setTipoDocumento(resultSet.getString("tipo_documento"));
-                documento.setTitulo(resultSet.getString("titulo"));
-                documento.setAutor(resultSet.getString("autor"));
-                documento.setEditorial(resultSet.getString("editorial"));
-                documento.setAnioPublicacion(resultSet.getInt("anio_publicacion"));
-                documento.setUbicacionFisica(resultSet.getString("ubicacion_fisica"));
-                documento.setCantidadEjemplares(resultSet.getInt("cantidad_ejemplares"));
-                documento.setEjemplaresDisponibles(resultSet.getInt("ejemplares_disponibles"));
-                documento.setEjemplaresPrestados(resultSet.getInt("ejemplares_prestados"));
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    ResultSetMetaData metaData = resultSet.getMetaData();
+                    int columnCount = metaData.getColumnCount();
 
-                documentos.add(documento);
+                    while (resultSet.next()) {
+                        Vector<Object> vector = new Vector<>();
+                        for (int i = 1; i <= columnCount; i++) {
+                            vector.add(resultSet.getObject(i));
+                        }
+                        data.add(vector);
+                    }
+                }
             }
         }
 
-        return documentos;
+        return data;
     }
     public static List<Documentos> getAllDocumentos() throws SQLException {
         List<Documentos> documentos = new ArrayList<>();

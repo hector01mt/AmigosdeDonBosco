@@ -2,117 +2,97 @@ package Vistas.DocumentProcess;
 
 import Modelo.Documentos;
 import Modelo.DocumentosMetodos;
+import Modelo.Usuarios;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Vector;
 
 public class SearchDocumentsForm extends JFrame {
+
     private JTextField searchField;
     private JButton searchButton;
-    private JButton processLoanButton; // Botón para procesar préstamo
     private JTable documentsTable;
-    private DefaultTableModel tableModel;
+    private JButton processLoanButton;
+    private JPanel mainPanel;
+    private Usuarios usuario;
 
-    public SearchDocumentsForm() {
+    public SearchDocumentsForm(Usuarios usuario) {
+        this.usuario = usuario;
+
         setTitle("Buscar Documentos");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800, 600);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
+        mainPanel = new JPanel(new BorderLayout());
 
-        // Panel de búsqueda
-        JPanel searchPanel = new JPanel();
-        searchPanel.setLayout(new FlowLayout());
-
+        JPanel searchPanel = new JPanel(new FlowLayout());
         searchField = new JTextField(20);
-        searchPanel.add(searchField);
-
         searchButton = new JButton("Buscar");
+        searchPanel.add(new JLabel("Buscar:"));
+        searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
-        // Botón para procesar préstamo
+        documentsTable = new JTable();
+        JScrollPane tableScrollPane = new JScrollPane(documentsTable);
+
         processLoanButton = new JButton("Procesar Préstamo");
-        searchPanel.add(processLoanButton); // Agregar el botón al panel de búsqueda
+        processLoanButton.setEnabled(false);
 
         mainPanel.add(searchPanel, BorderLayout.NORTH);
+        mainPanel.add(tableScrollPane, BorderLayout.CENTER);
+        mainPanel.add(processLoanButton, BorderLayout.SOUTH);
 
-        // Tabla de documentos
-        String[] columnNames = {"ID", "Tipo", "Título", "Autor", "Editorial", "Año", "Ubicación", "Total", "Disponibles", "Prestados"};
-        tableModel = new DefaultTableModel(columnNames, 0);
-        documentsTable = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(documentsTable);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        add(mainPanel);
 
-        setContentPane(mainPanel);
+        searchButton.addActionListener(e -> searchDocuments());
 
-        // Acción del botón de búsqueda
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchDocuments();
-            }
-        });
-
-        // Acción del botón para procesar préstamo
-        processLoanButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                processLoan();
-            }
-        });
-
-        // Configurar selección de fila en la tabla
         documentsTable.getSelectionModel().addListSelectionListener(e -> {
-            // Aquí puedes manejar la selección de una fila en la tabla si es necesario
+            if (!e.getValueIsAdjusting() && documentsTable.getSelectedRow() != -1) {
+                processLoanButton.setEnabled(true);
+            }
+        });
+
+        processLoanButton.addActionListener(e -> {
+            int selectedRow = documentsTable.getSelectedRow();
+            if (selectedRow != -1) {
+                int idDocumento = (int) documentsTable.getValueAt(selectedRow, 0);
+                String titulo = (String) documentsTable.getValueAt(selectedRow, 2);
+                ProcessLoanForm processLoanForm = new ProcessLoanForm(usuario, idDocumento, titulo);
+                processLoanForm.setVisible(true);
+            }
         });
     }
 
     private void searchDocuments() {
-        String searchText = searchField.getText().trim(); // Obtener el texto de búsqueda y quitar espacios en blanco al inicio y al final
+        DocumentosMetodos documentosMetodos = new DocumentosMetodos();
+        try {
+            Vector<Vector<Object>> data = documentosMetodos.buscarDocumentos(searchField.getText());
+            Vector<String> columnNames = new Vector<>();
+            columnNames.add("ID Documento");
+            columnNames.add("Tipo Documento");
+            columnNames.add("Título");
+            columnNames.add("Autor");
+            columnNames.add("Editorial");
+            columnNames.add("Año Publicación");
+            columnNames.add("Ubicación Física");
+            columnNames.add("Cantidad Ejemplares");
+            columnNames.add("Ejemplares Disponibles");
+            columnNames.add("Ejemplares Prestados");
 
-        // Verificar que el campo de búsqueda no esté vacío
-        if (!searchText.isEmpty()) {
-            try {
-                // Limpiar la tabla antes de realizar una nueva búsqueda
-                tableModel.setRowCount(0);
-
-                // Obtener la lista de documentos que coinciden con el texto de búsqueda
-                List<Documentos> documentos = DocumentosMetodos.buscarDocumentos(searchText);
-
-                // Llenar la tabla con los resultados de la búsqueda
-                for (Documentos documento : documentos) {
-                    tableModel.addRow(new Object[]{
-                            documento.getIdDocumento(),
-                            documento.getTipoDocumento(),
-                            documento.getTitulo(),
-                            documento.getAutor(),
-                            documento.getEditorial(),
-                            documento.getAnioPublicacion(),
-                            documento.getUbicacionFisica(),
-                            documento.getCantidadEjemplares(),
-                            documento.getEjemplaresDisponibles(),
-                            documento.getEjemplaresPrestados()
-                    });
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error al buscar documentos.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Por favor ingrese un término de búsqueda.");
+            DefaultTableModel model = new DefaultTableModel(data, columnNames);
+            documentsTable.setModel(model);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al buscar documentos", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-
-    private void processLoan() {
-        // Aquí implementa la lógica para procesar el préstamo
     }
 
 
