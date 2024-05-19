@@ -1,6 +1,7 @@
 package Vistas.AdminDashboard;
 import Modelo.Prestamos;
 import Modelo.PrestamosMetodos;
+import Vistas.LoginForm;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -8,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ManageLoansForm extends JFrame{
@@ -17,14 +19,17 @@ public class ManageLoansForm extends JFrame{
     private JTextField idDocumentoField;
     private JTextField fechaPrestamoField;
     private JTextField fechaDevolucionField;
-    private JTextField estadoField;
+    private JComboBox<String> estadoComboBox;
     private JTextField moraAcumuladaField;
     private JButton addButton;
     private JButton editButton;
     private JButton deleteButton;
     private JButton clearButton;
+    private JButton regresarButton;
     private JTable loansTable;
     private DefaultTableModel tableModel;
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public ManageLoansForm() {
         setTitle("Administrar Préstamos");
@@ -81,8 +86,8 @@ public class ManageLoansForm extends JFrame{
         gbc.gridy = 5;
         inputPanel.add(new JLabel("Estado:"), gbc);
         gbc.gridx = 1;
-        estadoField = new JTextField();
-        inputPanel.add(estadoField, gbc);
+        estadoComboBox = new JComboBox<>(new String[]{"Devuelto", "No devuelto"});
+        inputPanel.add(estadoComboBox, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 6;
@@ -109,6 +114,12 @@ public class ManageLoansForm extends JFrame{
         clearButton = new JButton("Limpiar");
         inputPanel.add(clearButton, gbc);
 
+        regresarButton = new JButton("Regresar");
+        gbc.gridx = 0;
+        gbc.gridy = 9;
+        gbc.gridwidth = 2;
+        inputPanel.add(regresarButton, gbc);
+
         mainPanel.add(inputPanel, BorderLayout.NORTH);
 
         String[] columnNames = {"ID Préstamo", "ID Usuario", "ID Documento", "Fecha Préstamo", "Fecha Devolución", "Estado", "Mora Acumulada"};
@@ -124,13 +135,21 @@ public class ManageLoansForm extends JFrame{
         loansTable.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = loansTable.getSelectedRow();
             if (selectedRow != -1) {
-                idPrestamoField.setText(tableModel.getValueAt(selectedRow, 0).toString());
-                idUsuarioField.setText(tableModel.getValueAt(selectedRow, 1).toString());
-                idDocumentoField.setText(tableModel.getValueAt(selectedRow, 2).toString());
-                fechaPrestamoField.setText(tableModel.getValueAt(selectedRow, 3).toString());
-                fechaDevolucionField.setText(tableModel.getValueAt(selectedRow, 4).toString());
-                estadoField.setText(tableModel.getValueAt(selectedRow, 5).toString());
-                moraAcumuladaField.setText(tableModel.getValueAt(selectedRow, 6).toString());
+                Object idPrestamo = tableModel.getValueAt(selectedRow, 0);
+                Object idUsuario = tableModel.getValueAt(selectedRow, 1);
+                Object idDocumento = tableModel.getValueAt(selectedRow, 2);
+                Object fechaPrestamo = tableModel.getValueAt(selectedRow, 3);
+                Object fechaDevolucion = tableModel.getValueAt(selectedRow, 4);
+                Object estado = tableModel.getValueAt(selectedRow, 5);
+                Object moraAcumulada = tableModel.getValueAt(selectedRow, 6);
+
+                idPrestamoField.setText(idPrestamo != null ? idPrestamo.toString() : "");
+                idUsuarioField.setText(idUsuario != null ? idUsuario.toString() : "");
+                idDocumentoField.setText(idDocumento != null ? idDocumento.toString() : "");
+                fechaPrestamoField.setText(fechaPrestamo != null ? fechaPrestamo.toString() : "");
+                fechaDevolucionField.setText(fechaDevolucion != null ? fechaDevolucion.toString() : "");
+                estadoComboBox.setSelectedItem(estado != null ? estado.toString() : "No devuelto");
+                moraAcumuladaField.setText(moraAcumulada != null ? moraAcumulada.toString() : "");
             }
         });
 
@@ -140,13 +159,13 @@ public class ManageLoansForm extends JFrame{
                 int idDocumento = Integer.parseInt(idDocumentoField.getText());
                 String fechaPrestamo = fechaPrestamoField.getText();
                 String fechaDevolucion = fechaDevolucionField.getText();
-                String estado = estadoField.getText();
+                String estado = estadoComboBox.getSelectedItem().toString();
                 double moraAcumulada = Double.parseDouble(moraAcumuladaField.getText());
 
                 PrestamosMetodos.agregarPrestamo(idUsuario, idDocumento, fechaPrestamo, fechaDevolucion, estado, moraAcumulada);
                 loadLoans();
                 clearFields();
-            } catch (NumberFormatException | SQLException ex) {
+            } catch (NumberFormatException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error al agregar préstamo.");
             }
@@ -159,7 +178,7 @@ public class ManageLoansForm extends JFrame{
                 int idDocumento = Integer.parseInt(idDocumentoField.getText());
                 String fechaPrestamo = fechaPrestamoField.getText();
                 String fechaDevolucion = fechaDevolucionField.getText();
-                String estado = estadoField.getText();
+                String estado = estadoComboBox.getSelectedItem().toString();
                 double moraAcumulada = Double.parseDouble(moraAcumuladaField.getText());
 
                 PrestamosMetodos.actualizarPrestamo(idPrestamo, idUsuario, idDocumento, fechaPrestamo, fechaDevolucion, estado, moraAcumulada);
@@ -189,6 +208,11 @@ public class ManageLoansForm extends JFrame{
         });
 
         clearButton.addActionListener(e -> clearFields());
+
+        regresarButton.addActionListener(e -> {
+            dispose();
+            new LoginForm().setVisible(true); // Asumiendo que tienes una clase LoginForm para regresar al login
+        });
     }
 
     private void loadLoans() {
@@ -200,8 +224,8 @@ public class ManageLoansForm extends JFrame{
                         loan.getIdPrestamo(),
                         loan.getIdUsuario(),
                         loan.getIdDocumento(),
-                        loan.getFechaPrestamo(),
-                        loan.getFechaDevolucion(),
+                        loan.getFechaPrestamo() != null ? dateFormat.format(loan.getFechaPrestamo()) : "",
+                        loan.getFechaDevolucion() != null ? dateFormat.format(loan.getFechaDevolucion()) : "",
                         loan.isDevuelto() ? "Devuelto" : "No devuelto",
                         loan.getMora()
                 };
@@ -219,10 +243,9 @@ public class ManageLoansForm extends JFrame{
         idDocumentoField.setText("");
         fechaPrestamoField.setText("");
         fechaDevolucionField.setText("");
-        estadoField.setText("");
+        estadoComboBox.setSelectedItem("No devuelto");
         moraAcumuladaField.setText("");
     }
-
 }
 
 

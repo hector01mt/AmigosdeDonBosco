@@ -1,6 +1,7 @@
 package Vistas.AlumnoDashboard;
 
 import Modelo.Usuarios;
+import Vistas.DocumentProcess.ProcessReturnForm;
 import Vistas.DocumentProcess.SearchDocumentsForm;
 import Vistas.LoginForm;
 
@@ -12,8 +13,8 @@ public class AlumnoDashboard extends JFrame {
     private JPanel alumnoPanel;
     private JButton searchDocumentsButton;
     private JButton regresarButton;
+    private JButton devolverLibroButton;
     private JLabel welcomeLabel;
-
 
     public AlumnoDashboard(Usuarios usuario) {
 
@@ -36,9 +37,15 @@ public class AlumnoDashboard extends JFrame {
         gbc.gridwidth = 2;
         alumnoPanel.add(searchDocumentsButton, gbc);
 
-        regresarButton = new JButton("Regresar");
+        devolverLibroButton = new JButton("Devolver Libro");
         gbc.gridx = 0;
         gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        alumnoPanel.add(devolverLibroButton, gbc);
+
+        regresarButton = new JButton("Regresar");
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         gbc.gridwidth = 2;
         alumnoPanel.add(regresarButton, gbc);
 
@@ -50,11 +57,11 @@ public class AlumnoDashboard extends JFrame {
         setLocationRelativeTo(null);
 
         searchDocumentsButton.addActionListener(e -> new SearchDocumentsForm(usuario).setVisible(true));
+        devolverLibroButton.addActionListener(e -> new ProcessReturnForm().setVisible(true));
         regresarButton.addActionListener(e -> {
             new LoginForm().setVisible(true);
             dispose();
         });
-
-
     }
+
 }

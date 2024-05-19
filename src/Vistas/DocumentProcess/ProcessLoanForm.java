@@ -5,6 +5,7 @@ import Modelo.Usuarios;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -15,6 +16,7 @@ public class ProcessLoanForm extends JFrame {
     private JTextField tituloField;
     private JTextField fechaPrestamoField;
     private JTextField fechaDevolucionField;
+    private JTextField idPrestamoField;
     private JButton confirmarButton;
     private Usuarios usuario;
     private int idDocumento;
@@ -26,7 +28,7 @@ public class ProcessLoanForm extends JFrame {
         this.titulo = titulo;
 
         setTitle("Procesar Préstamo");
-        setSize(400, 300);
+        setSize(400, 350); // Ajusté el tamaño para dar cabida al nuevo campo de texto
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -82,9 +84,17 @@ public class ProcessLoanForm extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(fechaDevolucionField, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        mainPanel.add(new JLabel("ID Préstamo:"), gbc); // Etiqueta para el nuevo campo de texto
+        idPrestamoField = new JTextField(20);
+        idPrestamoField.setEditable(false); // Hacer el campo de texto no editable
+        gbc.gridx = 1;
+        mainPanel.add(idPrestamoField, gbc);
+
         confirmarButton = new JButton("Confirmar Préstamo");
         gbc.gridx = 1;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.CENTER;
         mainPanel.add(confirmarButton, gbc);
 
@@ -95,10 +105,22 @@ public class ProcessLoanForm extends JFrame {
 
     private void confirmarPrestamo() {
         try {
-            Date fechaPrestamo = java.sql.Date.valueOf(fechaPrestamoField.getText());
-            Date fechaDevolucion = java.sql.Date.valueOf(fechaDevolucionField.getText());
+            double mora = PrestamosMetodos.obtenerMoraUsuario(usuario.getIdUsuario());
+            if (mora >= 1.0) {
+                JOptionPane.showMessageDialog(this, "No se puede procesar el préstamo. El usuario tiene mora acumulada" , "Mora Acumulada", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date fechaPrestamo = dateFormat.parse(fechaPrestamoField.getText());
+            Date fechaDevolucion = dateFormat.parse(fechaDevolucionField.getText());
             PrestamosMetodos.agregarPrestamo(usuario.getIdUsuario(), idDocumento, fechaPrestamo, fechaDevolucion);
-            JOptionPane.showMessageDialog(this, "Préstamo procesado exitosamente");
+            PrestamosMetodos.incrementarMoraUsuario(usuario.getIdUsuario());
+
+            int ultimoIdPrestamo = PrestamosMetodos.obtenerUltimoIdPrestamo();
+            idPrestamoField.setText(String.valueOf(ultimoIdPrestamo));
+            mainPanel.repaint();
+
+            JOptionPane.showMessageDialog(this, "Préstamo procesado exitosamente. ID del préstamo(Por favor tome nota del ID de su prestamo): " + ultimoIdPrestamo, "Préstamo Procesado", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } catch (Exception e) {
             e.printStackTrace();
